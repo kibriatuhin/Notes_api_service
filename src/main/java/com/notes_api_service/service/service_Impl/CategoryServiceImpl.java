@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -38,9 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryResponseDto> getAllCategory() {
 
-        List<Category> categoryList = categoryRepository.findAll();
-
-        return categoryList.stream()
+        return categoryRepository.findByIsDeletedFalse().stream()
                 .map(category ->
                         modelMapper.map(category, CategoryResponseDto.class))
                 .toList();
@@ -53,7 +53,29 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryList.stream()
                 .map(category ->
                         modelMapper.map(category, CategoryResponseDto.class))
-                .filter(categoryResponseDto -> !categoryResponseDto.getIsActive())
+                .filter(CategoryResponseDto::getIsActive)
                 .toList();
+    }
+
+    @Override
+    public CategoryDto getCatagoryById(Integer id) {
+
+        return categoryRepository.findByIdAndIsDeletedFalse(id)
+                .map(value ->  modelMapper.map(value, CategoryDto.class))
+                .orElse(null);
+    }
+
+    @Override
+    public String deleteCategoryById(Integer id) {
+
+       return categoryRepository.findById(id).map(category -> {
+            if (category.getIsDeleted()) {
+                return "D"; // Already deleted
+            }
+            category.setIsDeleted(true);
+            categoryRepository.save(category);
+            return "S"; // Successfully deleted
+        }).orElse("F"); // Not found
+
     }
 }
