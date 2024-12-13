@@ -3,6 +3,7 @@ package com.notes_api_service.service.service_Impl;
 import com.notes_api_service.dto.CategoryDto;
 import com.notes_api_service.dto.CategoryResponseDto;
 import com.notes_api_service.entity.Category;
+import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.repository.CategoryRepository;
 import com.notes_api_service.service.CategoryService;
 import org.modelmapper.ModelMapper;
@@ -35,7 +36,6 @@ public class CategoryServiceImpl implements CategoryService {
             updateCategory(category);
         }
          Category category1 =  categoryRepository.save(category);;
-        System.out.println(category1);
         return !ObjectUtils.isEmpty(category1);
     }
     private void updateCategory(Category category) {
@@ -50,6 +50,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryResponseDto> getAllCategory() {
+      //  String test = null;
+      //  test.toUpperCase();
 
         return categoryRepository.findByIsDeletedFalse().stream()
                 .map(category ->
@@ -69,11 +71,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto getCatagoryById(Integer id) {
+    public CategoryDto getCatagoryById(Integer id) throws Exception {
 
         return categoryRepository.findByIdAndIsDeletedFalse(id)
                 .map(value ->  modelMapper.map(value, CategoryDto.class))
-                .orElse(null);
+                .orElseThrow(()->new ResourceNotFoundException("Category not found "+ id));
     }
 
     @Override
@@ -87,6 +89,5 @@ public class CategoryServiceImpl implements CategoryService {
             categoryRepository.save(category);
             return "S"; // Successfully deleted
         }).orElse("F"); // Not found
-
     }
 }

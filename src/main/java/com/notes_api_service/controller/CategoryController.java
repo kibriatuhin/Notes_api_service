@@ -3,7 +3,9 @@ package com.notes_api_service.controller;
 import com.notes_api_service.dto.CategoryDto;
 import com.notes_api_service.dto.CategoryResponseDto;
 import com.notes_api_service.entity.Category;
+import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/category")
 public class CategoryController {
@@ -48,13 +50,13 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable Integer id) {
+    public ResponseEntity<?> getCategoryById(@PathVariable Integer id) throws Exception {
+        CategoryDto categoryDto = categoryService.getCatagoryById(id);
 
-         CategoryDto categoryDto = categoryService.getCatagoryById(id);
+        return ObjectUtils.isEmpty(categoryDto)
+                ? new ResponseEntity<>("Internal Server Error ", HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>(categoryDto, HttpStatus.OK);
 
-         return ObjectUtils.isEmpty(categoryDto)
-                 ? new ResponseEntity<>("No Category Found = " + id, HttpStatus.NOT_FOUND)
-                 : new ResponseEntity<>(categoryDto, HttpStatus.OK);
 
     }
 
