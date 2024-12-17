@@ -5,6 +5,7 @@ import com.notes_api_service.dto.CategoryResponseDto;
 import com.notes_api_service.entity.Category;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
