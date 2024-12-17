@@ -6,6 +6,7 @@ import com.notes_api_service.entity.Category;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.repository.CategoryRepository;
 import com.notes_api_service.service.CategoryService;
+import com.notes_api_service.utils.Validation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    Validation validation;
 
     @Override
     public Boolean saveCategory(CategoryDto categoryDto) {
+        //Validation
+        validation.categoryValidation(categoryDto);
+
         Category category = modelMapper.map(categoryDto, Category.class);
         if(ObjectUtils.isEmpty(category)){
             category.setIsDeleted(false);
