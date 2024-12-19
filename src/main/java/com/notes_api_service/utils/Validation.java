@@ -18,37 +18,9 @@ public class Validation {
             throw new IllegalArgumentException("Category objects/JSON should not be null/empty");
         }
         //validation  field
-        validateField("name", category.getName(), 10, 100, errors);
-        validateField("description", category.getDescription(), 10, 100, errors);
+        validateField("name", category.getName(), 3, 100, errors);
+        validateField("description", category.getDescription(), 3, 100, errors);
         validateBooleanField(category.getIsActive(), errors);
-
-            /*if (ObjectUtils.isEmpty(category.getName())){
-                errors.put("name","Name should not be empty");
-            }else {
-                if (category.getName().length() <10){
-                    errors.put("name","Name should contain at least 10 characters");
-                }
-                if (category.getName().length() >100){
-                    errors.put("name","Name should contain at most 100 characters");
-                }
-            }
-
-            //validation description field
-            if (ObjectUtils.isEmpty(category.getDescription())){
-                errors.put("description","Description should not be empty");
-            }else {
-                if (category.getDescription().length() <10){
-                    errors.put("description","Description should contain at least 10 characters");
-                }
-                if (category.getDescription().length() >100){
-                    errors.put("description","Description should contain at most 100 characters");
-                }
-            }
-
-            //isActive field
-            if (ObjectUtils.isEmpty(category.getIsActive())){
-                errors.put("isActive","Active field should not be empty");
-            }*/
 
         if (!errors.isEmpty()){
             throw new DtoValidationException(errors);

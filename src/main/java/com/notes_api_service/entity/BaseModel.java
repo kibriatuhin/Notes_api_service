@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
 @Setter
@@ -13,10 +17,12 @@ import java.util.Date;
 @NoArgsConstructor
 @MappedSuperclass
 public class BaseModel {
-    private Boolean isActive;
-    private Boolean isDeleted;
+    @CreatedBy
     private Integer createdBy;
+    @CreatedDate
     private Date createdOn;
+    @LastModifiedBy
     private Integer updatedBy;
+    @LastModifiedDate
     private Date updatedOn;
 }
