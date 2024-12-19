@@ -34,9 +34,9 @@ public class CategoryServiceImpl implements CategoryService {
         validation.categoryValidation(categoryDto);
 
         Category category = modelMapper.map(categoryDto, Category.class);
-        if(ObjectUtils.isEmpty(category)){
+        if(ObjectUtils.isEmpty(category.getId())){
             category.setIsDeleted(false);
-            category.setCreatedBy(1);
+           /* category.setCreatedBy(1);*/
             category.setCreatedOn(new Date());
         }else {
             updateCategory(category);
@@ -47,8 +47,8 @@ public class CategoryServiceImpl implements CategoryService {
     private void updateCategory(Category category) {
         categoryRepository.findById(category.getId()).ifPresent(existingCategory -> {
             category.setIsDeleted(false);
-            category.setUpdatedBy(1);
-            category.setUpdatedOn(new Date());
+            /*category.setUpdatedBy(1);
+            category.setUpdatedOn(new Date());*/
             category.setCreatedBy(existingCategory.getCreatedBy());
             category.setCreatedOn(existingCategory.getCreatedOn());
         });
