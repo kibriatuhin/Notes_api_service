@@ -3,6 +3,7 @@ package com.notes_api_service.service.service_Impl;
 import com.notes_api_service.dto.CategoryDto;
 import com.notes_api_service.dto.CategoryResponseDto;
 import com.notes_api_service.entity.Category;
+import com.notes_api_service.exception.customException.ExistDataException;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.repository.CategoryRepository;
 import com.notes_api_service.service.CategoryService;
@@ -32,8 +33,15 @@ public class CategoryServiceImpl implements CategoryService {
     public Boolean saveCategory(CategoryDto categoryDto) {
         //Validation
         validation.categoryValidation(categoryDto);
+        //check category exist or not
+        Boolean exist = categoryRepository.existsByName(categoryDto.getName().trim());
+        if (exist) {
+            //error
+            throw  new ExistDataException("Category already exist");
+        }
 
         Category category = modelMapper.map(categoryDto, Category.class);
+
         if(ObjectUtils.isEmpty(category.getId())){
             category.setIsDeleted(false);
            /* category.setCreatedBy(1);*/
@@ -41,6 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
         }else {
             updateCategory(category);
         }
+        //new category
          Category category1 =  categoryRepository.save(category);;
         return !ObjectUtils.isEmpty(category1);
     }
