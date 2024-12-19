@@ -34,10 +34,10 @@ public class CategoryServiceImpl implements CategoryService {
         validation.categoryValidation(categoryDto);
 
         Category category = modelMapper.map(categoryDto, Category.class);
-        if(ObjectUtils.isEmpty(category)){
+        if(ObjectUtils.isEmpty(category.getId())){
             category.setIsDeleted(false);
-           /* category.setCreatedBy(1);
-            category.setCreatedOn(new Date());*/
+           /* category.setCreatedBy(1);*/
+            category.setCreatedOn(new Date());
         }else {
             updateCategory(category);
         }
