@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class GenericResponse {
     private  String message;
     private  Object data;
     public ResponseEntity<?> createResponseEntity() {
-        Map<String,Object> map = new HashMap<>();
+        Map<String,Object> map = new LinkedHashMap<>();
         map.put("status", status);
         map.put("message", message);
 
