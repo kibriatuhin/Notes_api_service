@@ -96,7 +96,7 @@ public class NotesServiceImpl implements NotesService {
                 fileDetails.setFileSize(file.getSize());
                 fileDetails.setDisplayFileName(getDisplayFileName(orginalFileName));
                 fileDetails.setPath(storePath);
-                
+
 
                 return fileRepository.save(fileDetails);
             }
