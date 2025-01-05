@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.notes_api_service.dto.NotesDto;
 import com.notes_api_service.entity.FileDetails;
 import com.notes_api_service.entity.Notes;
+import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.repository.FileRepository;
 import com.notes_api_service.repository.NotesRepository;
 import com.notes_api_service.service.NotesService;
@@ -14,10 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -63,17 +67,31 @@ public class NotesServiceImpl implements NotesService {
         return !ObjectUtils.isEmpty(saveNotes);
     }
 
+    @Override
+    public byte[] downloadFile(FileDetails fileDetails) throws Exception {
+
+
+        InputStream io = new FileInputStream(fileDetails.getPath());
+
+        return StreamUtils.copyToByteArray(io);
+
+    }
+
+    @Override
+    public FileDetails getFileDetails(Integer id) throws Exception {
+        return fileRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("File is not available"));
+    }
+
     private FileDetails saveFileDetails(MultipartFile file) throws IOException {
         if (!ObjectUtils.isEmpty(file) && !file.isEmpty()) {
             String orginalFileName = file.getOriginalFilename();
             String extention = FilenameUtils.getExtension(orginalFileName);
             //format check
-            List<String> allowsExtention =  Arrays.asList("pdf","xlsx","jpg");
+            List<String> allowsExtention =  Arrays.asList("pdf","xlsx","jpg","png");
             if (!allowsExtention.contains(extention)) {
-                throw new IllegalArgumentException("invalid file format ! upload only (pdf,xlsx,jpg)");
+                throw new IllegalArgumentException("invalid file format ! upload only (pdf,xlsx,jpg,png)");
             }
-
-
 
             //random file name generate
             String randomNumber = UUID.randomUUID().toString();
