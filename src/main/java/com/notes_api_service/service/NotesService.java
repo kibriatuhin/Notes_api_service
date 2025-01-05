@@ -1,6 +1,7 @@
 package com.notes_api_service.service;
 
 import com.notes_api_service.dto.NotesDto;
+import com.notes_api_service.dto.NotesResponse;
 import com.notes_api_service.entity.FileDetails;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,10 @@ public interface NotesService {
 
      byte[] downloadFile(FileDetails fileDetails) throws Exception;
      FileDetails getFileDetails(Integer id) throws Exception;
+
+     NotesResponse getAllNotesByUser(Integer id,Integer pageNo , Integer pageSize) ;
+
+
 
 
      List<NotesDto> getAllNotes();
