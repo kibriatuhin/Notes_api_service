@@ -2,6 +2,7 @@ package com.notes_api_service.controller;
 
 import com.notes_api_service.dto.CategoryResponseDto;
 import com.notes_api_service.dto.NotesDto;
+import com.notes_api_service.dto.NotesResponse;
 import com.notes_api_service.entity.FileDetails;
 import com.notes_api_service.service.NotesService;
 import com.notes_api_service.utils.CommonUtil;
@@ -59,6 +60,17 @@ public class NotesController {
         return CollectionUtils.isEmpty(NotesList)
                 ? ResponseEntity.noContent().build()
                 : CommonUtil.createBuildResponse(NotesList, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/user-notes")
+    public ResponseEntity<?> getAllNotesByUser(
+            @RequestParam (name = "pageNo" ,defaultValue = "0") Integer pageNo,
+            @RequestParam(name = "pageSize" ,defaultValue = "10") Integer pageSize) {
+
+        Integer userId = 1;
+        NotesResponse NotesList = notesService.getAllNotesByUser(userId,pageNo,pageSize);
+        return CommonUtil.createBuildResponse(NotesList, HttpStatus.OK);
 
     }
 
