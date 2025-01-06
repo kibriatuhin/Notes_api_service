@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -57,18 +58,38 @@ public class NotesServiceImpl implements NotesService {
         //validation notes
         validation.notesValidation(notesDto);
 
+        //update user if id is given
+        if (!ObjectUtils.isEmpty(notesDto.getId())) {
+            updateNotes(notesDto,file);
+        }
+
         Notes notesMap =  modelMapper.map(notesDto, Notes.class);
         FileDetails fileDetails = saveFileDetails(file);
         if (!ObjectUtils.isEmpty(fileDetails)) {
             notesMap.setFileDetails(fileDetails);
 
         }else {
-            notesMap.setFileDetails(null);
+            if (!ObjectUtils.isEmpty(notesDto.getId())) {
+                notesMap.setFileDetails(null);
+            }
+
         }
 
 
         Notes saveNotes =  notesRepository.save(notesMap);
         return !ObjectUtils.isEmpty(saveNotes);
+    }
+    //update notes
+    private void updateNotes(NotesDto notesDto, MultipartFile file) throws ResourceNotFoundException {
+        Notes exitNotes = notesRepository.findById(notesDto.getId())
+                .orElseThrow(()-> new ResourceNotFoundException("Invalid notes id"));
+
+
+        if (ObjectUtils.isEmpty(file)) {
+
+            notesDto.setFileDetails(modelMapper.map(Optional.ofNullable(exitNotes.getFileDetails()), NotesDto.FileDetailsDto.class));
+            //notesDto.setTitle();
+        }
     }
 
     @Override
@@ -104,6 +125,7 @@ public class NotesServiceImpl implements NotesService {
                 .build();
     }
 
+    //save file
     private FileDetails saveFileDetails(MultipartFile file) throws IOException {
         if (!ObjectUtils.isEmpty(file) && !file.isEmpty()) {
             String orginalFileName = file.getOriginalFilename();
@@ -143,6 +165,7 @@ public class NotesServiceImpl implements NotesService {
         }
         return null;
     }
+    //get display name for file
     private String getDisplayFileName(String orginalFileName) {
         //javaProgramming.pdf
         //pdf
