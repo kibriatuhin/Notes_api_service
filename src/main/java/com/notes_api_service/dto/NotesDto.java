@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Setter
@@ -24,6 +25,10 @@ public class NotesDto {
     private Date updatedOn;
 
     private FileDetailsDto fileDetails;
+
+    private Boolean isDeleted;
+
+    private LocalDateTime deletedOn;
 
 
     @Setter

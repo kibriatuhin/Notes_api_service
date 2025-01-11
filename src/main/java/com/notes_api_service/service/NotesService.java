@@ -16,10 +16,17 @@ public interface NotesService {
 
      NotesResponse getAllNotesByUser(Integer id,Integer pageNo , Integer pageSize) ;
 
+     void softDeleteNotesById(Integer id) throws Exception;
+     void hardDeleteNotesById(Integer id) throws Exception;
 
+     void restoreNotesById(Integer id) throws Exception;
 
 
      List<NotesDto> getAllNotes();
+
+     List<NotesDto> getUserRecycleBinNotes(Integer userId);
+
+     void emptyRecycleByUser(Integer userId);
      //NotesDto getNotes(Integer id);
 
 }
