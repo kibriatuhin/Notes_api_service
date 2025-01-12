@@ -1,7 +1,9 @@
 package com.notes_api_service.service;
 
+import com.notes_api_service.dto.FavouriteNoteDto;
 import com.notes_api_service.dto.NotesDto;
 import com.notes_api_service.dto.NotesResponse;
+import com.notes_api_service.entity.FavouriteNote;
 import com.notes_api_service.entity.FileDetails;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,5 +30,8 @@ public interface NotesService {
 
      void emptyRecycleByUser(Integer userId);
      //NotesDto getNotes(Integer id);
+     void favouriteNotes(Integer noteId) throws Exception;
+     void unfavouriteNotes(Integer favouriteNoteId) throws Exception;
+     List<FavouriteNoteDto> getUserFavouriteNotes() throws Exception;
 
 }

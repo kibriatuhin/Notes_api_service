@@ -1,6 +1,7 @@
 package com.notes_api_service.controller;
 
 import com.notes_api_service.dto.CategoryResponseDto;
+import com.notes_api_service.dto.FavouriteNoteDto;
 import com.notes_api_service.dto.NotesDto;
 import com.notes_api_service.dto.NotesResponse;
 import com.notes_api_service.entity.FileDetails;
@@ -116,4 +117,29 @@ public class NotesController {
 
         return CommonUtil.createBuildResponseMessage("Clear recycle-bin Success", HttpStatus.OK);
     }
+
+    @GetMapping("/fav/{noteId}")
+    public ResponseEntity<?> favouriteNotes(@PathVariable Integer noteId ) throws Exception {
+
+        notesService.favouriteNotes(noteId);
+
+        return CommonUtil.createBuildResponseMessage("Favourite note added", HttpStatus.OK);
+    }
+    @DeleteMapping("/un-fav/{favNoteId}")
+    public ResponseEntity<?> unfavouriteNotes(@PathVariable Integer favNoteId) throws Exception {
+
+        notesService.unfavouriteNotes(favNoteId);
+
+        return CommonUtil.createBuildResponseMessage("Remove favourite note", HttpStatus.OK);
+    }
+    @GetMapping("/fav-notes")
+    public ResponseEntity<?> getUserFavouriteNotes() throws Exception {
+
+       List<FavouriteNoteDto> favouriteNoteDto =  notesService.getUserFavouriteNotes();
+        if (CollectionUtils.isEmpty(favouriteNoteDto)){
+            return CommonUtil.createBuildResponseMessage("Favourite note not available", HttpStatus.NOT_FOUND);
+        }
+        return CommonUtil.createBuildResponse(favouriteNoteDto, HttpStatus.OK);
+    }
+
 }
