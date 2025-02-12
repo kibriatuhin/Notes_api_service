@@ -45,7 +45,7 @@ public class NotesServiceImpl implements NotesService {
     private ModelMapper modelMapper;
 
     @Autowired
-    Validation validation;
+    private Validation validation;
 
     @Value("${file.upload.path}")
     String uploadPath ;

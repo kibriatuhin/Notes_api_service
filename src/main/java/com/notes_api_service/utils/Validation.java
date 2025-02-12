@@ -2,7 +2,9 @@ package com.notes_api_service.utils;
 
 import com.notes_api_service.dto.CategoryDto;
 import com.notes_api_service.dto.NotesDto;
+import com.notes_api_service.dto.TodoDto;
 import com.notes_api_service.entity.Category;
+import com.notes_api_service.enums.TodoStatus;
 import com.notes_api_service.exception.customException.DtoValidationException;
 import com.notes_api_service.repository.CategoryRepository;
 import org.modelmapper.ValidationException;
@@ -80,6 +82,21 @@ public class Validation {
             return str;
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    public void todoValidation(TodoDto todoDto) throws Exception{
+        TodoDto.StatusDto reqStatus = todoDto.getStatus();
+
+        Boolean statusFound = false;
+        for (TodoStatus st : TodoStatus.values()){
+            if (st.getId().equals(reqStatus.getId())) {
+                statusFound = true;
+               // break;
+            }
+        }
+        if (!statusFound){
+            throw new IllegalArgumentException("Invalid status " + reqStatus);
+        }
     }
 
 }
