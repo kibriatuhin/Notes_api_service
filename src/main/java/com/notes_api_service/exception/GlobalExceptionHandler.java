@@ -85,4 +85,6 @@ public class GlobalExceptionHandler {
         return CommonUtil.createErrorResponseMessage(exc.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
+
+
 }
