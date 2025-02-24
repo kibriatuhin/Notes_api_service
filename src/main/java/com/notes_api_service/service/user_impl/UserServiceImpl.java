@@ -1,11 +1,13 @@
 package com.notes_api_service.service.user_impl;
 
 import com.notes_api_service.dto.UserDto;
+import com.notes_api_service.entity.EmailRequest;
 import com.notes_api_service.entity.Role;
 import com.notes_api_service.entity.User;
 import com.notes_api_service.repository.RoleRepository;
 import com.notes_api_service.repository.UserRepository;
 import com.notes_api_service.service.UserService;
+import com.notes_api_service.service.EmailService;
 import com.notes_api_service.utils.Validation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +30,46 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private EmailService emailService;
+
+
 
     @Override
-    public Boolean registerUser(UserDto userDto) {
+    public Boolean registerUser(UserDto userDto) throws Exception {
         //user validation
         validation.userValidation(userDto);
         User user = modelMapper.map(userDto, User.class);
         setRole(userDto,user);
         User savedUser = userRepository.save(user);
-        return !ObjectUtils.isEmpty(savedUser);
+        if (!ObjectUtils.isEmpty(savedUser)){
+            emailSend(savedUser);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void emailSend(User savedUser) throws Exception {
+        String message = "<html>"
+                + "<body>"
+                + "<p>Hi, <b>" + savedUser.getFirstName() + " " + savedUser.getLastName() + "</b>,</p>"
+                + "<p>Your account has been successfully registered.</p>"
+                + "<p>Click the below link to verify your account:</p>"
+                + "<p><a href='http://your-website.com/verify?email=" + savedUser.getEmail() + "' style='background-color:blue;color:white;padding:10px 15px;text-decoration:none;'>Verify Account</a></p>"
+                + "<br>"
+                + "<p>Thanks,</p>"
+                + "<p><b>Notesapi.com</b></p>"
+                + "</body>"
+                + "</html>";
+        EmailRequest emailRequest = EmailRequest.builder()
+                .to(savedUser.getEmail())
+                .subject("Account created successfully")
+                .title("Account Creating Confirmation")
+                .message(message)
+                .build();
+        emailService.sendEmail(emailRequest);
+
     }
 
     private void setRole(UserDto userDto,User user) {

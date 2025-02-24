@@ -20,7 +20,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) throws Exception {
         Boolean register = userService.registerUser(userDto);
        return register ? CommonUtil.createBuildResponseMessage("Register success", HttpStatus.CREATED)
                : CommonUtil.createErrorResponseMessage(" Register Failed", HttpStatus.INTERNAL_SERVER_ERROR);

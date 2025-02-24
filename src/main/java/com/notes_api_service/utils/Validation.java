@@ -8,8 +8,10 @@ import com.notes_api_service.entity.Category;
 import com.notes_api_service.entity.Role;
 import com.notes_api_service.enums.TodoStatus;
 import com.notes_api_service.exception.customException.DtoValidationException;
+import com.notes_api_service.exception.customException.ExistDataException;
 import com.notes_api_service.repository.CategoryRepository;
 import com.notes_api_service.repository.RoleRepository;
+import com.notes_api_service.repository.UserRepository;
 import org.modelmapper.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,8 @@ public class Validation {
     CategoryRepository categoryRepository;
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     public void categoryValidation(CategoryDto category) {
@@ -120,6 +124,11 @@ public class Validation {
                 || !userDto.getEmail().matches(Constants.EMAIL_REGEX)){
             throw new IllegalArgumentException("Email address is invalid");
 
+        }else {
+            Boolean existEmail = userRepository.existsByEmail(userDto.getEmail());
+            if (existEmail){
+                throw  new ExistDataException("Email address already exist");
+            }
         }
         if (!StringUtils.hasText(userDto.getPhoneNo())
                 || !userDto.getPhoneNo().matches(Constants.MOBILE_REGEX)){
