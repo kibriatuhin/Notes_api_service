@@ -1,6 +1,7 @@
 package com.notes_api_service.utils;
 
 import com.notes_api_service.handler.GenericResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,6 +52,11 @@ public class CommonUtil {
                 return  "application/octet-stream";
         }
 
+    }
+
+    public static String getUrl(HttpServletRequest request){
+
+        return request.getRequestURL().toString().replace(request.getServletPath(), "");
     }
 
 
