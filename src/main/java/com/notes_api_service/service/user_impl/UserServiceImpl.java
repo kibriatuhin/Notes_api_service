@@ -1,6 +1,7 @@
 package com.notes_api_service.service.user_impl;
 
 import com.notes_api_service.dto.UserDto;
+import com.notes_api_service.entity.AccountStatus;
 import com.notes_api_service.entity.EmailRequest;
 import com.notes_api_service.entity.Role;
 import com.notes_api_service.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,32 +38,50 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Boolean registerUser(UserDto userDto) throws Exception {
+    public Boolean registerUser(UserDto userDto,String url) throws Exception {
         //user validation
         validation.userValidation(userDto);
         User user = modelMapper.map(userDto, User.class);
+
         setRole(userDto,user);
+
+        AccountStatus accountStatus = AccountStatus.builder()
+                .isActive(false)
+                .verificationCode(UUID.randomUUID().toString())
+                .build();
+        user.setStatus(accountStatus);
+
         User savedUser = userRepository.save(user);
         if (!ObjectUtils.isEmpty(savedUser)){
-            emailSend(savedUser);
+            emailSend(savedUser,url);
             return true;
         }
 
         return false;
     }
 
-    private void emailSend(User savedUser) throws Exception {
-        String message = "<html>"
-                + "<body>"
-                + "<p>Hi, <b>" + savedUser.getFirstName() + " " + savedUser.getLastName() + "</b>,</p>"
-                + "<p>Your account has been successfully registered.</p>"
-                + "<p>Click the below link to verify your account:</p>"
-                + "<p><a href='http://your-website.com/verify?email=" + savedUser.getEmail() + "' style='background-color:blue;color:white;padding:10px 15px;text-decoration:none;'>Verify Account</a></p>"
-                + "<br>"
-                + "<p>Thanks,</p>"
-                + "<p><b>Notesapi.com</b></p>"
-                + "</body>"
-                + "</html>";
+    private void emailSend(User savedUser ,String url) throws Exception {
+        String verificationCode = (savedUser.getStatus() != null) ?
+                savedUser.getStatus().getVerificationCode() : "null";
+        String verificationLink = String.format("%s/api/v1/home/verify?uid=%d&code=%s",url,
+                savedUser.getId(), verificationCode);
+
+        String message = String.format(
+                "<html>"
+                        + "<body>"
+                        + "<p>Hi, <b>%s %s</b>,</p>"
+                        + "<p>Your account has been successfully registered.</p>"
+                        + "<p>Click the link below to verify your account:</p>"
+                        + "<p><a href='%s' style='background-color:blue;color:white;padding:10px 15px;text-decoration:none;'>Verify Account</a></p>"
+                        + "<br>"
+                        + "<p>Thanks,</p>"
+                        + "<p><b>Notesapi.com</b></p>"
+                        + "</body>"
+                        + "</html>",
+                savedUser.getFirstName(),
+                savedUser.getLastName(),
+                verificationLink
+        );
         EmailRequest emailRequest = EmailRequest.builder()
                 .to(savedUser.getEmail())
                 .subject("Account created successfully")

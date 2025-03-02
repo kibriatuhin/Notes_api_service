@@ -3,6 +3,7 @@ package com.notes_api_service.exception;
 import com.notes_api_service.exception.customException.DtoValidationException;
 import com.notes_api_service.exception.customException.ExistDataException;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
+import com.notes_api_service.exception.customException.SuccessException;
 import com.notes_api_service.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -85,6 +86,10 @@ public class GlobalExceptionHandler {
         return CommonUtil.createErrorResponseMessage(exc.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(SuccessException.class)
+    public ResponseEntity<?> handleSuccessException(SuccessException e) {
+        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.OK);
+    }
 
 
 }
