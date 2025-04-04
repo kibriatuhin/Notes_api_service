@@ -1,5 +1,7 @@
 package com.notes_api_service.service.user_impl;
 
+import com.notes_api_service.dto.LoginRequest;
+import com.notes_api_service.dto.LoginResponse;
 import com.notes_api_service.dto.UserDto;
 import com.notes_api_service.entity.AccountStatus;
 import com.notes_api_service.entity.EmailRequest;
@@ -7,11 +9,15 @@ import com.notes_api_service.entity.Role;
 import com.notes_api_service.entity.User;
 import com.notes_api_service.repository.RoleRepository;
 import com.notes_api_service.repository.UserRepository;
+import com.notes_api_service.security.CustomUserDetails;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.service.EmailService;
 import com.notes_api_service.utils.Validation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -34,6 +40,9 @@ public class UserServiceImpl implements UserService {
     private ModelMapper modelMapper;
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
 
 
@@ -59,6 +68,26 @@ public class UserServiceImpl implements UserService {
 
         return false;
     }
+
+    @Override
+    public LoginResponse loginUser(LoginRequest loginRequest) throws Exception {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),loginRequest.getPassword()));
+        if (authentication.isAuthenticated()){
+           CustomUserDetails credentials = (CustomUserDetails) authentication.getPrincipal();
+           String token = "sshsahhsdfasd";
+           LoginResponse loginResponse = LoginResponse.builder()
+                   .user(modelMapper.map(credentials.getUser(), UserDto.class))
+                   .token(token)
+                   .build();
+           return loginResponse;
+        }
+
+        return null;
+    }
+
+
 
     private void emailSend(User savedUser ,String url) throws Exception {
         String verificationCode = (savedUser.getStatus() != null) ?
