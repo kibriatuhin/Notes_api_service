@@ -10,14 +10,17 @@ import com.notes_api_service.entity.User;
 import com.notes_api_service.repository.RoleRepository;
 import com.notes_api_service.repository.UserRepository;
 import com.notes_api_service.security.CustomUserDetails;
+import com.notes_api_service.service.JwtService;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.service.EmailService;
+import com.notes_api_service.service.jwt_impl.JwtServiceImpl;
 import com.notes_api_service.utils.Validation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -44,6 +47,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
+
 
 
     @Override
@@ -59,7 +68,7 @@ public class UserServiceImpl implements UserService {
                 .verificationCode(UUID.randomUUID().toString())
                 .build();
         user.setStatus(accountStatus);
-
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         if (!ObjectUtils.isEmpty(savedUser)){
             emailSend(savedUser,url);
@@ -76,7 +85,7 @@ public class UserServiceImpl implements UserService {
                         loginRequest.getEmail(),loginRequest.getPassword()));
         if (authentication.isAuthenticated()){
            CustomUserDetails credentials = (CustomUserDetails) authentication.getPrincipal();
-           String token = "sshsahhsdfasd";
+           String token = jwtService.generateJwtToken(credentials.getUser());
            LoginResponse loginResponse = LoginResponse.builder()
                    .user(modelMapper.map(credentials.getUser(), UserDto.class))
                    .token(token)
