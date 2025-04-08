@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class NotesController {
     private NotesService notesService;
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> saveNotes(@RequestParam String notes ,@RequestParam(required = false) MultipartFile file) throws Exception {
 
          return notesService.saveNotes(notes,file) ?
@@ -37,6 +39,7 @@ public class NotesController {
     }
 
     @GetMapping("/download/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws Exception {
         FileDetails fileDetails = notesService.getFileDetails(id);
         byte[] downloadFile = notesService.downloadFile(fileDetails);
@@ -56,6 +59,7 @@ public class NotesController {
 
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllNotes() {
         List<NotesDto> NotesList = notesService.getAllNotes();
         return CollectionUtils.isEmpty(NotesList)
@@ -65,6 +69,7 @@ public class NotesController {
     }
 
     @GetMapping("/user-notes")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAllNotesByUser(
             @RequestParam (name = "pageNo" ,defaultValue = "0") Integer pageNo,
             @RequestParam(name = "pageSize" ,defaultValue = "10") Integer pageSize) {
@@ -76,6 +81,7 @@ public class NotesController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> deleteNotes(@PathVariable Integer id) throws Exception {
 
         notesService.softDeleteNotesById(id);
@@ -84,6 +90,7 @@ public class NotesController {
     }
 
     @GetMapping("/restore/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> restoreNotes(@PathVariable Integer id) throws Exception {
 
         notesService.restoreNotesById(id);
@@ -92,6 +99,7 @@ public class NotesController {
     }
 
     @GetMapping("/recycle-bin/")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getUserRecycleBinNotes() throws Exception {
 
         Integer userId = 1;
@@ -103,6 +111,7 @@ public class NotesController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> hardDeleteNotes(@PathVariable Integer id) throws Exception {
 
         notesService.hardDeleteNotesById(id);
@@ -111,6 +120,7 @@ public class NotesController {
     }
 
     @DeleteMapping("/delete-recycle/")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> emptyRecycleBin() throws Exception {
         Integer userId = 1;
         notesService.emptyRecycleByUser(userId);
@@ -119,6 +129,7 @@ public class NotesController {
     }
 
     @GetMapping("/fav/{noteId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> favouriteNotes(@PathVariable Integer noteId ) throws Exception {
 
         notesService.favouriteNotes(noteId);
@@ -126,6 +137,7 @@ public class NotesController {
         return CommonUtil.createBuildResponseMessage("Favourite note added", HttpStatus.OK);
     }
     @DeleteMapping("/un-fav/{favNoteId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> unfavouriteNotes(@PathVariable Integer favNoteId) throws Exception {
 
         notesService.unfavouriteNotes(favNoteId);
@@ -133,6 +145,7 @@ public class NotesController {
         return CommonUtil.createBuildResponseMessage("Remove favourite note", HttpStatus.OK);
     }
     @GetMapping("/fav-notes")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getUserFavouriteNotes() throws Exception {
 
        List<FavouriteNoteDto> favouriteNoteDto =  notesService.getUserFavouriteNotes();
@@ -143,6 +156,7 @@ public class NotesController {
     }
 
     @GetMapping("/copy/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> copyNotes(@PathVariable Integer id ) throws Exception {
 
       Boolean copyNotes =   notesService.copyNotes(id);

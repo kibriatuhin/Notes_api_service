@@ -1,10 +1,10 @@
 package com.notes_api_service.service.jwt_impl;
 
 import com.notes_api_service.entity.User;
+import com.notes_api_service.exception.customException.JwtAuthenticationException;
+import com.notes_api_service.exception.customException.JwtTokenExpireException;
 import com.notes_api_service.service.JwtService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoder;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -46,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
                .setClaims(claims)
                .setSubject(user.getEmail())
                .setIssuedAt(new Date(System.currentTimeMillis()))
-               .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+               .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
                .signWith(getKey(), SignatureAlgorithm.HS256)
                .compact();
 
@@ -76,9 +76,16 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        Claims claims = Jwts.parser().verifyWith(decriptKey(secretKey))
-                .build().parseSignedClaims(token).getPayload();
-        return claims;
+        try{
+            return Jwts.parser().verifyWith(decriptKey(secretKey))
+                    .build().parseSignedClaims(token).getPayload();
+        }catch (ExpiredJwtException e){
+            throw new JwtTokenExpireException("Token has expired");
+        }catch (JwtException e){
+            throw new JwtAuthenticationException("Invalid JWT token");
+        }catch (Exception e){
+            throw e;
+        }
     }
     private SecretKey decriptKey(String secretKey){
        byte[] key =   Decoders.BASE64.decode(secretKey);
