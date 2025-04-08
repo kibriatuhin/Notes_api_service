@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
                 .verificationCode(UUID.randomUUID().toString())
                 .build();
         user.setStatus(accountStatus);
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+       // user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         if (!ObjectUtils.isEmpty(savedUser)){
             emailSend(savedUser,url);
