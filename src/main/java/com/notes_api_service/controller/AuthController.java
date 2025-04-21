@@ -2,7 +2,7 @@ package com.notes_api_service.controller;
 
 import com.notes_api_service.dto.LoginRequest;
 import com.notes_api_service.dto.LoginResponse;
-import com.notes_api_service.dto.UserDto;
+import com.notes_api_service.dto.UserRequestDto;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.utils.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,9 +24,9 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto, HttpServletRequest servletRequest) throws Exception {
+    public ResponseEntity<?> registerUser(@RequestBody UserRequestDto userRequestDto, HttpServletRequest servletRequest) throws Exception {
         String url =  CommonUtil.getUrl(servletRequest);
-        Boolean register = userService.registerUser(userDto,url);
+        Boolean register = userService.registerUser(userRequestDto,url);
        return register ? CommonUtil.createBuildResponseMessage("Register success", HttpStatus.CREATED)
                : CommonUtil.createErrorResponseMessage(" Register Failed", HttpStatus.INTERNAL_SERVER_ERROR);
     }

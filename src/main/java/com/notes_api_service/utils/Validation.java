@@ -3,7 +3,7 @@ package com.notes_api_service.utils;
 import com.notes_api_service.dto.CategoryDto;
 import com.notes_api_service.dto.NotesDto;
 import com.notes_api_service.dto.TodoDto;
-import com.notes_api_service.dto.UserDto;
+import com.notes_api_service.dto.UserRequestDto;
 import com.notes_api_service.entity.Category;
 import com.notes_api_service.entity.Role;
 import com.notes_api_service.enums.TodoStatus;
@@ -12,7 +12,6 @@ import com.notes_api_service.exception.customException.ExistDataException;
 import com.notes_api_service.repository.CategoryRepository;
 import com.notes_api_service.repository.RoleRepository;
 import com.notes_api_service.repository.UserRepository;
-import org.modelmapper.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -110,39 +109,39 @@ public class Validation {
 
 
     //User Validation
-    public void userValidation(UserDto userDto){
+    public void userValidation(UserRequestDto userRequestDto){
 
-        if (!StringUtils.hasText(userDto.getFirstName())){
+        if (!StringUtils.hasText(userRequestDto.getFirstName())){
             throw new IllegalArgumentException("First name is invalid");
         }
 
-        if (!StringUtils.hasText(userDto.getLastName())){
+        if (!StringUtils.hasText(userRequestDto.getLastName())){
             throw new IllegalArgumentException("Last name is invalid");
         }
 
-        if (!StringUtils.hasText(userDto.getEmail())
-                || !userDto.getEmail().matches(Constants.EMAIL_REGEX)){
+        if (!StringUtils.hasText(userRequestDto.getEmail())
+                || !userRequestDto.getEmail().matches(Constants.EMAIL_REGEX)){
             throw new IllegalArgumentException("Email address is invalid");
 
         }else {
-            Boolean existEmail = userRepository.existsByEmail(userDto.getEmail());
+            Boolean existEmail = userRepository.existsByEmail(userRequestDto.getEmail());
             if (existEmail){
                 throw  new ExistDataException("Email address already exist");
             }
         }
-        if (!StringUtils.hasText(userDto.getPhoneNo())
-                || !userDto.getPhoneNo().matches(Constants.MOBILE_REGEX)){
+        if (!StringUtils.hasText(userRequestDto.getPhoneNo())
+                || !userRequestDto.getPhoneNo().matches(Constants.MOBILE_REGEX)){
             throw new IllegalArgumentException("Phone number is invalid");
         }
 
 
 
-        if (CollectionUtils.isEmpty(userDto.getRoles())){
+        if (CollectionUtils.isEmpty(userRequestDto.getRoles())){
             throw new IllegalArgumentException("Roles are invalid");
         }else {
             List<Integer> rolesId = roleRepository.findAll().stream().map(Role::getId).toList();
-            List<Integer> invalidReqRoleIds =  userDto.getRoles().stream()
-                    .map(UserDto.RoleDto::getId)
+            List<Integer> invalidReqRoleIds =  userRequestDto.getRoles().stream()
+                    .map(UserRequestDto.RoleDto::getId)
                     .filter(rid->!rolesId.contains(rid)).toList();
             if (!CollectionUtils.isEmpty(invalidReqRoleIds)){
                 throw new IllegalArgumentException("Roles are invalid"+ invalidReqRoleIds);

@@ -6,6 +6,7 @@ import com.notes_api_service.enums.TodoStatus;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.repository.TodoRepository;
 import com.notes_api_service.service.TodoService;
+import com.notes_api_service.utils.CommonUtil;
 import com.notes_api_service.utils.Validation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public List<TodoDto> getTodoByUser() {
-        Integer userId = 1;
+        Integer userId = CommonUtil.getLogedInUser().getId();
         return todoRepository.findByCreatedBy(userId)
                 .stream().map(td->modelMapper.map(td,TodoDto.class)).toList();
 

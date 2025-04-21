@@ -1,8 +1,5 @@
 package com.notes_api_service.dto;
 
-import com.notes_api_service.entity.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
 import lombok.*;
 
 import java.util.List;
@@ -12,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class UserDto {
+public class UserRequestDto {
     private Integer id;
     private String firstName;
     private String lastName;
