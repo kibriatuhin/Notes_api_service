@@ -5,6 +5,7 @@ import com.notes_api_service.dto.FavouriteNoteDto;
 import com.notes_api_service.dto.NotesDto;
 import com.notes_api_service.dto.NotesResponse;
 import com.notes_api_service.entity.FileDetails;
+import com.notes_api_service.entity.User;
 import com.notes_api_service.service.NotesService;
 import com.notes_api_service.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class NotesController {
     private NotesService notesService;
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> saveNotes(@RequestParam String notes ,@RequestParam(required = false) MultipartFile file) throws Exception {
 
          return notesService.saveNotes(notes,file) ?
@@ -74,7 +75,7 @@ public class NotesController {
             @RequestParam (name = "pageNo" ,defaultValue = "0") Integer pageNo,
             @RequestParam(name = "pageSize" ,defaultValue = "10") Integer pageSize) {
 
-        Integer userId = 1;
+        Integer userId = CommonUtil.getLogedInUser().getId();
         NotesResponse NotesList = notesService.getAllNotesByUser(userId,pageNo,pageSize);
         return CommonUtil.createBuildResponse(NotesList, HttpStatus.OK);
 
@@ -102,7 +103,7 @@ public class NotesController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getUserRecycleBinNotes() throws Exception {
 
-        Integer userId = 1;
+        Integer userId = CommonUtil.getLogedInUser().getId();
         List<NotesDto> notes = notesService.getUserRecycleBinNotes(userId);
         if (CollectionUtils.isEmpty(notes)){
             return CommonUtil.createBuildResponseMessage("Notes Not available in recycle bin", HttpStatus.NOT_FOUND);
@@ -122,7 +123,7 @@ public class NotesController {
     @DeleteMapping("/delete-recycle/")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> emptyRecycleBin() throws Exception {
-        Integer userId = 1;
+        Integer userId = CommonUtil.getLogedInUser().getId();
         notesService.emptyRecycleByUser(userId);
 
         return CommonUtil.createBuildResponseMessage("Clear recycle-bin Success", HttpStatus.OK);

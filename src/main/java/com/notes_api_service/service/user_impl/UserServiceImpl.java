@@ -2,7 +2,7 @@ package com.notes_api_service.service.user_impl;
 
 import com.notes_api_service.dto.LoginRequest;
 import com.notes_api_service.dto.LoginResponse;
-import com.notes_api_service.dto.UserDto;
+import com.notes_api_service.dto.UserRequestDto;
 import com.notes_api_service.entity.AccountStatus;
 import com.notes_api_service.entity.EmailRequest;
 import com.notes_api_service.entity.Role;
@@ -13,7 +13,6 @@ import com.notes_api_service.security.CustomUserDetails;
 import com.notes_api_service.service.JwtService;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.service.EmailService;
-import com.notes_api_service.service.jwt_impl.JwtServiceImpl;
 import com.notes_api_service.utils.Validation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +55,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Boolean registerUser(UserDto userDto,String url) throws Exception {
+    public Boolean registerUser(UserRequestDto userRequestDto, String url) throws Exception {
         //user validation
-        validation.userValidation(userDto);
-        User user = modelMapper.map(userDto, User.class);
+        validation.userValidation(userRequestDto);
+        User user = modelMapper.map(userRequestDto, User.class);
 
-        setRole(userDto,user);
+        setRole(userRequestDto,user);
 
         AccountStatus accountStatus = AccountStatus.builder()
                 .isActive(false)
@@ -87,7 +86,7 @@ public class UserServiceImpl implements UserService {
            CustomUserDetails credentials = (CustomUserDetails) authentication.getPrincipal();
            String token = jwtService.generateJwtToken(credentials.getUser());
            LoginResponse loginResponse = LoginResponse.builder()
-                   .user(modelMapper.map(credentials.getUser(), UserDto.class))
+                   .user(modelMapper.map(credentials.getUser(), UserRequestDto.class))
                    .token(token)
                    .build();
            return loginResponse;
@@ -130,8 +129,8 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private void setRole(UserDto userDto,User user) {
-       List<Integer> reqRoleId=  userDto.getRoles().stream().map(r->r.getId()).toList();
+    private void setRole(UserRequestDto userRequestDto, User user) {
+       List<Integer> reqRoleId=  userRequestDto.getRoles().stream().map(r->r.getId()).toList();
        List<Role> roleList = roleRepository.findAllById(reqRoleId);
        user.setRoles(roleList);
 

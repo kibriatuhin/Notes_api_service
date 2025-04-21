@@ -1,11 +1,15 @@
 package com.notes_api_service.utils;
 
+import com.notes_api_service.dto.UserResponseDto;
+import com.notes_api_service.entity.User;
 import com.notes_api_service.handler.GenericResponse;
+import com.notes_api_service.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class CommonUtil {
     public static ResponseEntity<?> createBuildResponse(Object data , HttpStatus status){
@@ -57,6 +61,16 @@ public class CommonUtil {
     public static String getUrl(HttpServletRequest request){
 
         return request.getRequestURL().toString().replace(request.getServletPath(), "");
+    }
+
+    public static User getLogedInUser(){
+        try {
+            CustomUserDetails logUser =    (CustomUserDetails)  SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
+            return  logUser.getUser();
+        }catch (Exception e){
+            throw e;
+        }
     }
 
 
