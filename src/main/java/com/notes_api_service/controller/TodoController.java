@@ -40,7 +40,6 @@ public class TodoController {
                 ? CommonUtil.createErrorResponseMessage("Internal Server Error ", HttpStatus.NOT_FOUND)
                 : CommonUtil.createBuildResponse(todoDto, HttpStatus.OK);
     }
-
     @GetMapping("/")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAllTodoByUser(){
