@@ -12,6 +12,7 @@ import com.notes_api_service.repository.FavouriteNotesRepository;
 import com.notes_api_service.repository.FileRepository;
 import com.notes_api_service.repository.NotesRepository;
 import com.notes_api_service.service.NotesService;
+import com.notes_api_service.utils.CommonUtil;
 import com.notes_api_service.utils.Validation;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -118,11 +119,26 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public NotesResponse getAllNotesByUser(Integer id,Integer pageNo , Integer pageSize) {
-
+    public NotesResponse getAllNotesByUser(Integer pageNo , Integer pageSize) {
+        Integer userId= CommonUtil.getLogedInUser().getId();
        Pageable pageable =  PageRequest.of(pageNo,pageSize);
-       Page<Notes> pageNotes =  notesRepository.findByCreatedByAndIsDeletedFalse(id,pageable);
-       List<NotesDto> notesDto =   pageNotes.get().map(n -> modelMapper.map(n,NotesDto.class)).toList();
+       Page<Notes> pageNotes =  notesRepository.findByCreatedByAndIsDeletedFalse(userId,pageable);
+        return getNotesResponse(pageNotes);
+    }
+
+    @Override
+    public NotesResponse getAllNotesBySearch(Integer pageNo, Integer pageSize,String keyword) {
+
+        Integer userId= CommonUtil.getLogedInUser().getId();
+
+        Pageable pageable =  PageRequest.of(pageNo,pageSize);
+        Page<Notes> pageNotes =  notesRepository.searchNotes(keyword,userId,pageable);
+        return getNotesResponse(pageNotes);
+    }
+
+    private NotesResponse getNotesResponse(Page<Notes> pageNotes) {
+        List<NotesDto> notesDto =   pageNotes.get()
+                .map(n -> modelMapper.map(n,NotesDto.class)).toList();
         return NotesResponse.builder()
                 .notes(notesDto)
                 .pageNo(pageNotes.getNumber())
