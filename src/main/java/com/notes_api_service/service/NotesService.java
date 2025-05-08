@@ -16,7 +16,8 @@ public interface NotesService {
      byte[] downloadFile(FileDetails fileDetails) throws Exception;
      FileDetails getFileDetails(Integer id) throws Exception;
 
-     NotesResponse getAllNotesByUser(Integer id,Integer pageNo , Integer pageSize) ;
+     NotesResponse getAllNotesByUser(Integer pageNo , Integer pageSize) ;
+     NotesResponse getAllNotesBySearch(Integer pageNo , Integer pageSize,String keyword) ;
 
      void softDeleteNotesById(Integer id) throws Exception;
      void hardDeleteNotesById(Integer id) throws Exception;
