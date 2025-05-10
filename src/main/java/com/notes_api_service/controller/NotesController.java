@@ -55,10 +55,6 @@ public class NotesController {
 
         return  ResponseEntity.ok().headers(headers).body(downloadFile);
     }
-
-
-
-
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllNotes() {
