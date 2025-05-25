@@ -1,6 +1,7 @@
 package com.notes_api_service.controller;
 
 import com.notes_api_service.dto.PasswordResetReq;
+import com.notes_api_service.endpoint.HomeControllerEndpoint;
 import com.notes_api_service.service.HomeService;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.utils.CommonUtil;
@@ -13,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/v1/home")
-public class HomeController {
+public class HomeController implements HomeControllerEndpoint {
     private Logger log = LoggerFactory.getLogger(HomeController.class);
 
     @Autowired
@@ -23,7 +23,7 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/verify")
+    @Override
     public ResponseEntity<?> verifyUserAccount(@RequestParam Integer uid , @RequestParam String code) throws Exception{
         log.info("Home Controller :: verifyUserAccount() :: Execution start");
 
@@ -35,7 +35,7 @@ public class HomeController {
         return response;
     }
 
-    @GetMapping("/send-email-reset")
+    @Override
     public ResponseEntity<?> sendEmailForPasswordReset(@RequestParam String email,HttpServletRequest servletRequest) throws Exception {
         log.info("Home Controller :: sendEmailForPasswordReset() :: Execution start");
         String url =  CommonUtil.getUrl(servletRequest);
@@ -43,7 +43,7 @@ public class HomeController {
         log.info("Home Controller :: sendEmailForPasswordReset() :: Execution end");
         return CommonUtil.createBuildResponseMessage("Email Send Success !! Check Email for Reset password", HttpStatus.OK);
     }
-    @GetMapping("/verify-pswd-link")
+    @Override
     public ResponseEntity<?> verifyPasswordResetLink(@RequestParam Integer uid,@RequestParam String code) throws Exception {
         log.info("Home Controller :: verifyPasswordResetLink() :: Execution start");
         ResponseEntity<?> response = homeService.verifyPswdResetLink(uid,code)?
@@ -52,7 +52,7 @@ public class HomeController {
         log.info("Home Controller :: verifyPasswordResetLink() :: Execution end");
         return response;
     }
-    @PostMapping("/reset-pswd")
+    @Override
     public ResponseEntity<?> resetPassword(@RequestBody PasswordResetReq passwordResetReq) throws Exception {
         log.info("Home Controller :: resetPassword() :: Execution start");
         userService.resetPassword(passwordResetReq);
