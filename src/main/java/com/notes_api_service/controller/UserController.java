@@ -7,6 +7,7 @@ import com.notes_api_service.entity.User;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.utils.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/userDtl")
 public class UserController {
@@ -26,8 +28,10 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(){
+        log.info("UserController :: getProfile :: Execution start");
         User logedInUser = CommonUtil.getLogedInUser();
         UserResponseDto userRequestDto =  modelMapper.map(logedInUser, UserResponseDto.class);
+        log.info("UserController :: getProfile :: Execution end");
         return CommonUtil.createBuildResponse(userRequestDto, HttpStatus.OK);
     }
 

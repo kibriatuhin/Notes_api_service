@@ -9,6 +9,7 @@ import com.notes_api_service.repository.UserRepository;
 import com.notes_api_service.service.EmailService;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.utils.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.UUID;
-
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -28,20 +29,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changePassword(PasswordChngRequest passwordChngRequest) {
+        log.info("UserServiceImpl :: changePassword :: Execution start");
         User loggedInuser = CommonUtil.getLogedInUser();
         if (!passwordEncoder.matches( passwordChngRequest.getOldPassword(),loggedInuser.getPassword())) {
+            log.error("UserServiceImpl :: message :: Old password does not match");
             throw new IllegalArgumentException("Old password does not match");
         }
         loggedInuser.setPassword(passwordEncoder.encode(passwordChngRequest.getNewPassword()));
         userRepository.save(loggedInuser);
+        log.info("UserServiceImpl :: changePassword :: Execution end");
     }
 
 
 
     @Override
     public void sendEmailPasswordReset(String email,String url) throws Exception {
+        log.info("UserServiceImpl :: sendEmailPasswordReset :: Execution start");
        User user =  userRepository.findByEmail(email);
        if (ObjectUtils.isEmpty(user)){
+           log.error("UserServiceImpl ::sendEmailPasswordReset :: message :: User not found / invalid email");
            throw new ResourceNotFoundException("Invalid Email ");
        }
        //generate password reset token
@@ -50,20 +56,24 @@ public class UserServiceImpl implements UserService {
         User updateUser = userRepository.save(user);
         //send email for reset password
        emailSendForRegister(updateUser,url);
+       log.info("UserServiceImpl :: sendEmailPasswordReset :: Execution end");
 
     }
 
     @Override
     public void resetPassword(PasswordResetReq passwordResetReq) throws Exception {
+        log.info("UserServiceImpl :: resetPassword :: Execution start");
         User user = userRepository
                 .findById(passwordResetReq.getUid())
                 .orElseThrow(()->new ResourceNotFoundException("Invalid User"));
         user.setPassword(passwordEncoder.encode(passwordResetReq.getNewPassword()));
         user.getStatus().setPasswordResetToken(null);
         userRepository.save(user);
+        log.info("UserServiceImpl :: resetPassword :: Execution end");
     }
 
     private void emailSendForRegister(User user ,String url) throws Exception {
+        log.info("UserServiceImpl :: emailSendForRegister :: Execution start");
         String resetToken = (user.getStatus() != null) ?
                 user.getStatus().getPasswordResetToken() : "null";
         String verificationLink = String.format("%s/api/v1/home/verify-pswd-link?uid=%d&code=%s",url,
@@ -95,6 +105,7 @@ public class UserServiceImpl implements UserService {
                 .build();
         //send password reset to user
         emailService.sendEmail(emailRequest);
+        log.info("UserServiceImpl :: emailSendForRegister :: Execution end");
 
     }
 

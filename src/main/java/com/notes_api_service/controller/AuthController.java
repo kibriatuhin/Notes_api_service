@@ -22,18 +22,24 @@ public class AuthController {
 
     @PostMapping("/save")
     public ResponseEntity<?> registerUser(@RequestBody UserRequestDto userRequestDto, HttpServletRequest servletRequest) throws Exception {
+        log.info("AuthController :: registerUser :: Execution start");
         String url =  CommonUtil.getUrl(servletRequest);
         Boolean register = authService.registerUser(userRequestDto,url);
-       return register ? CommonUtil.createBuildResponseMessage("Register success", HttpStatus.CREATED)
-               : CommonUtil.createErrorResponseMessage(" Register Failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        ResponseEntity<?> response = register ? CommonUtil.createBuildResponseMessage("Register success", HttpStatus.CREATED)
+                : CommonUtil.createErrorResponseMessage(" Register Failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        log.info("AuthController :: registerUser :: Execution end");
+       return response;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) throws Exception {
+        log.info("AuthController :: loginUser :: Execution start");
         LoginResponse loginResponse = authService.loginUser(loginRequest);
         if (ObjectUtils.isEmpty(loginResponse)) {
+            log.info("Error :: {} " ,"Login Failed");
             return CommonUtil.createErrorResponseMessage(" Invalid Credential", HttpStatus.BAD_REQUEST);
         }
+        log.info("AuthController :: loginUser :: Execution end");
         return CommonUtil.createBuildResponse(loginResponse, HttpStatus.CREATED);
     }
 
