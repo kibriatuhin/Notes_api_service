@@ -2,6 +2,7 @@ package com.notes_api_service.controller;
 
 import com.notes_api_service.dto.CategoryResponseDto;
 import com.notes_api_service.dto.TodoDto;
+import com.notes_api_service.endpoint.TodoControllerEndpoint;
 import com.notes_api_service.service.TodoService;
 import com.notes_api_service.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/todo")
-public class TodoController {
+public class TodoController implements TodoControllerEndpoint {
     @Autowired
     TodoService todoService;
 
-    @PostMapping("/save")
-    @PreAuthorize("hasRole('USER')")
+    @Override
     public ResponseEntity<?> saveNotes(@RequestBody TodoDto todoDto) throws Exception {
 
        return todoService.saveTodo(todoDto) ?
@@ -31,8 +30,7 @@ public class TodoController {
                 : CommonUtil.createErrorResponseMessage("Todo Not  Saved", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @Override
     public ResponseEntity<?> getTodoById(@PathVariable Integer id) throws Exception {
       TodoDto todoDto =   todoService.getTodoById(id);
 
@@ -40,8 +38,7 @@ public class TodoController {
                 ? CommonUtil.createErrorResponseMessage("Internal Server Error ", HttpStatus.NOT_FOUND)
                 : CommonUtil.createBuildResponse(todoDto, HttpStatus.OK);
     }
-    @GetMapping("/")
-    @PreAuthorize("hasRole('USER')")
+    @Override
     public ResponseEntity<?> getAllTodoByUser(){
 
         List<TodoDto> toDoList = todoService.getTodoByUser();

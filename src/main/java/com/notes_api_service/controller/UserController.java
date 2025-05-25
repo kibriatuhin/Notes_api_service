@@ -3,6 +3,7 @@ package com.notes_api_service.controller;
 import com.notes_api_service.dto.PasswordChngRequest;
 import com.notes_api_service.dto.UserRequestDto;
 import com.notes_api_service.dto.UserResponseDto;
+import com.notes_api_service.endpoint.UserControllerEndpoint;
 import com.notes_api_service.entity.User;
 import com.notes_api_service.service.UserService;
 import com.notes_api_service.utils.CommonUtil;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/userDtl")
-public class UserController {
+
+public class UserController implements UserControllerEndpoint {
     @Autowired
     private ModelMapper modelMapper;
 
@@ -26,7 +27,7 @@ public class UserController {
     private UserService userService;
 
 
-    @GetMapping("/profile")
+    @Override
     public ResponseEntity<?> getProfile(){
         log.info("UserController :: getProfile :: Execution start");
         User logedInUser = CommonUtil.getLogedInUser();
@@ -35,7 +36,7 @@ public class UserController {
         return CommonUtil.createBuildResponse(userRequestDto, HttpStatus.OK);
     }
 
-    @PostMapping("/changePswd")
+    @Override
     public ResponseEntity<?> changePassword(@RequestBody PasswordChngRequest passwordChngRequest){
         userService.changePassword(passwordChngRequest);
         return CommonUtil.createBuildResponseMessage("Password Change Success", HttpStatus.OK);

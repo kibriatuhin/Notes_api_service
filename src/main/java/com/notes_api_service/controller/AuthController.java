@@ -3,6 +3,7 @@ package com.notes_api_service.controller;
 import com.notes_api_service.dto.LoginRequest;
 import com.notes_api_service.dto.LoginResponse;
 import com.notes_api_service.dto.UserRequestDto;
+import com.notes_api_service.endpoint.AuthControllerEndpoint;
 import com.notes_api_service.service.AuthService;
 import com.notes_api_service.utils.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,12 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/user")
-public class AuthController {
+public class AuthController implements AuthControllerEndpoint {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/save")
+    @Override
     public ResponseEntity<?> registerUser(@RequestBody UserRequestDto userRequestDto, HttpServletRequest servletRequest) throws Exception {
         log.info("AuthController :: registerUser :: Execution start");
         String url =  CommonUtil.getUrl(servletRequest);
@@ -31,7 +31,7 @@ public class AuthController {
        return response;
     }
 
-    @PostMapping("/login")
+    @Override
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) throws Exception {
         log.info("AuthController :: loginUser :: Execution start");
         LoginResponse loginResponse = authService.loginUser(loginRequest);

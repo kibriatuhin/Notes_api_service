@@ -2,6 +2,7 @@ package com.notes_api_service.controller;
 
 import com.notes_api_service.dto.CategoryDto;
 import com.notes_api_service.dto.CategoryResponseDto;
+import com.notes_api_service.endpoint.CategoryControllerEndpoint;
 import com.notes_api_service.entity.Category;
 import com.notes_api_service.exception.customException.ResourceNotFoundException;
 import com.notes_api_service.service.CategoryService;
@@ -20,14 +21,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/category")
-public class CategoryController {
+public class CategoryController implements CategoryControllerEndpoint {
 
     @Autowired
     private CategoryService categoryService;
 
-    @PostMapping("/save")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Override
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) {
         log.info("CategoryController :: saveCategory :: Execution start");
        ResponseEntity<?> response =  categoryService.saveCategory(categoryDto)
@@ -37,8 +36,7 @@ public class CategoryController {
        return response;
     }
 
-    @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Override
     public ResponseEntity<?> getAllCategory() {
         List<CategoryResponseDto> categoryList = categoryService.getAllCategory();
         return CollectionUtils.isEmpty(categoryList)
@@ -47,8 +45,7 @@ public class CategoryController {
 
     }
 
-    @GetMapping("/active")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @Override
     public ResponseEntity<?> getActiveCategory() {
         List<CategoryResponseDto> categoryList = categoryService.getActiveCategory();
         return CollectionUtils.isEmpty(categoryList)
@@ -57,8 +54,7 @@ public class CategoryController {
 
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @Override
     public ResponseEntity<?> getCategoryById(@PathVariable Integer id) throws Exception {
         CategoryDto categoryDto = categoryService.getCatagoryById(id);
 
@@ -69,8 +65,7 @@ public class CategoryController {
 
     }
 
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Override
     public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id) {
         String categoryDeleted = categoryService.deleteCategoryById(id);
         if (categoryDeleted.contains("S")){
