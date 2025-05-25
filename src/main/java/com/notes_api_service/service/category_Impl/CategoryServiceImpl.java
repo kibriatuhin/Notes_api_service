@@ -8,6 +8,7 @@ import com.notes_api_service.exception.customException.ResourceNotFoundException
 import com.notes_api_service.repository.CategoryRepository;
 import com.notes_api_service.service.CategoryService;
 import com.notes_api_service.utils.Validation;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -30,12 +32,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Boolean saveCategory(CategoryDto categoryDto) {
+        log.info("CategoryServiceImpl :: saveCategory :: Execution start");
         //Validation
         validation.categoryValidation(categoryDto);
         //check category exist or not
         Boolean exist = categoryRepository.existsByName(categoryDto.getName().trim());
         if (exist) {
             //error
+            log.info("Message::Category already exists");
             throw  new ExistDataException("Category already exist");
         }
 
@@ -50,6 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         //new category
          Category category1 =  categoryRepository.save(category);;
+         log.info("CategoryServiceImpl :: saveCategory :: Execution end");
         return !ObjectUtils.isEmpty(category1);
     }
     private void updateCategory(Category category) {

@@ -29,10 +29,12 @@ public class CategoryController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) {
-
-       return categoryService.saveCategory(categoryDto)
+        log.info("CategoryController :: saveCategory :: Execution start");
+       ResponseEntity<?> response =  categoryService.saveCategory(categoryDto)
                 ? CommonUtil.createBuildResponseMessage("Saved Success", HttpStatus.CREATED)
                 : CommonUtil.createErrorResponseMessage("Category Not  Saved", HttpStatus.INTERNAL_SERVER_ERROR);
+       log.info("CategoryController :: saveCategory :: Execution end");
+       return response;
     }
 
     @GetMapping("/")

@@ -5,12 +5,14 @@ import com.notes_api_service.entity.User;
 import com.notes_api_service.handler.GenericResponse;
 import com.notes_api_service.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@Slf4j
 public class CommonUtil {
     public static ResponseEntity<?> createBuildResponse(Object data , HttpStatus status){
         GenericResponse genericResponse = GenericResponse.builder()
@@ -64,11 +66,14 @@ public class CommonUtil {
     }
 
     public static User getLogedInUser(){
+        log.info("CommonUtil :: getLogedInUser :: Execution start");
         try {
             CustomUserDetails logUser =    (CustomUserDetails)  SecurityContextHolder
                     .getContext().getAuthentication().getPrincipal();
+            log.info("message ::getLogedInUser() :: success ");
             return  logUser.getUser();
         }catch (Exception e){
+            log.info("message ::getLogedInUser() :: failed ");
             throw e;
         }
     }

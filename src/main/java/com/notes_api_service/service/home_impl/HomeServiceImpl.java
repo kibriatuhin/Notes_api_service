@@ -6,10 +6,12 @@ import com.notes_api_service.exception.customException.ResourceNotFoundException
 import com.notes_api_service.exception.customException.SuccessException;
 import com.notes_api_service.repository.UserRepository;
 import com.notes_api_service.service.HomeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 @Service
 public class HomeServiceImpl implements HomeService {
     @Autowired
@@ -17,9 +19,11 @@ public class HomeServiceImpl implements HomeService {
 
     @Override
     public Boolean verifyAccount(Integer userId, String verificationCode) throws Exception {
+        log.info("HomeServiceImpl :: verifyAccount() :: Execution start");
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid User"));
         if (user.getStatus().getVerificationCode() == null){
+             log.info("message :: Account Already Verified");
              throw new SuccessException("Account Already Verified");
         }
         AccountStatus status = user.getStatus();
@@ -28,8 +32,10 @@ public class HomeServiceImpl implements HomeService {
             status.setVerificationCode(null);
             //user.setStatus(status);
             userRepository.save(user);
+            log.info("message :: Account Already Verified");
             return true;
         }
+        log.info("HomeServiceImpl :: verifyAccount() :: Execution end");
 
         return false;
     }
