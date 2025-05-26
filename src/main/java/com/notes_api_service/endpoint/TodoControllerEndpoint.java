@@ -4,6 +4,9 @@ import com.notes_api_service.dto.TodoDto;
 import com.notes_api_service.utils.CommonUtil;
 import  static com.notes_api_service.utils.Constants.ROLE_ADMIN;
 import  static com.notes_api_service.utils.Constants.ROLE_USER;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,18 +15,25 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Tag(name = "Todo APIs", description = "All the todo operations APIs")
 @RequestMapping("/api/v1/todo")
 public interface TodoControllerEndpoint {
+
+
     @PostMapping("/save")
     @PreAuthorize(ROLE_USER)
+    @Operation(summary = "Save notes endpoint",tags = {"Todo APIs"})
     public ResponseEntity<?> saveNotes(@RequestBody TodoDto todoDto) throws Exception ;
+
 
     @GetMapping("/{id}")
     @PreAuthorize(ROLE_USER)
+    @Operation(summary = "get todo note by id endpoint",tags = {"Todo APIs"})
     public ResponseEntity<?> getTodoById(@PathVariable Integer id) throws Exception ;
+
 
     @GetMapping("/")
     @PreAuthorize(ROLE_USER)
+    @Operation(summary = "get all todo notes endpoint",tags = {"Todo APIs"})
     public ResponseEntity<?> getAllTodoByUser();
 }
