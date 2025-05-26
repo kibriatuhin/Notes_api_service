@@ -3,6 +3,9 @@ package com.notes_api_service.endpoint;
 import com.notes_api_service.dto.CategoryDto;
 import com.notes_api_service.dto.CategoryResponseDto;
 import com.notes_api_service.utils.CommonUtil;
+import com.notes_api_service.utils.Constants;
+import static com.notes_api_service.utils.Constants.ROLE_ADMIN;
+import static com.notes_api_service.utils.Constants.ROLE_ADMIN_USER;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,22 +18,22 @@ import java.util.List;
 public interface CategoryControllerEndpoint {
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) ;
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<?> getAllCategory() ;
 
     @GetMapping("/active")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize(ROLE_ADMIN_USER)
     public ResponseEntity<?> getActiveCategory() ;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize(ROLE_ADMIN_USER)
     public ResponseEntity<?> getCategoryById(@PathVariable Integer id) throws Exception ;
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id) ;
 }
