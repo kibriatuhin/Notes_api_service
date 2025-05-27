@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/user/**","/api/v1/home/**"
                                 ,"/swagger-ui/**","/v3/api-docs/**"
-                                ,"/enotes-doc/**","/enotes-api-doc/**").permitAll()
+                                ,"/enotes-doc/**","/enotes-api-doc/**","/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
