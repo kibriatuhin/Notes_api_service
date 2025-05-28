@@ -33,13 +33,13 @@ public class AuthController implements AuthControllerEndpoint {
 
     @Override
     public ResponseEntity<?> loginUser( LoginRequest loginRequest) throws Exception {
-        log.info("AuthController :: loginUser :: Execution start");
+        log.info("AuthController :: loginUser() :: Execution start");
         LoginResponse loginResponse = authService.loginUser(loginRequest);
         if (ObjectUtils.isEmpty(loginResponse)) {
             log.info("Error :: {} " ,"Login Failed");
             return CommonUtil.createErrorResponseMessage(" Invalid Credential", HttpStatus.BAD_REQUEST);
         }
-        log.info("AuthController :: loginUser :: Execution end");
+        log.info("AuthController :: loginUser() :: Execution end");
         return CommonUtil.createBuildResponse(loginResponse, HttpStatus.CREATED);
     }
 

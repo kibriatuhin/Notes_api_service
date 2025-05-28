@@ -7,6 +7,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -42,6 +43,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleResourceNotFoundException(Exception e) {
         log.error("GlobalExceptionHandler :: handleResourceNotFoundException() :: {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentialsException(Exception e) {
+        log.error("GlobalExceptionHandler :: handleBadCredentialsException() :: {}", e.getMessage());
+        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
